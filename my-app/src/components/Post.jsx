@@ -11,6 +11,7 @@ const Post = (props) => {
 
     return(
         <div className='post-container'>
+            
             <img
             className='tack'
             src={Tack} 
@@ -21,7 +22,7 @@ const Post = (props) => {
             <img 
             className='post-img'
             src={props.img} 
-            alt={props.explanation}/>
+            alt={props.title}/>
             <p className='post-date'>
                     {props.date}
             </p>
@@ -31,9 +32,6 @@ const Post = (props) => {
             src={liked ? Thumbs2 : Thumbs} 
             alt='thumbs up'
             onClick={() =>setLike(!liked)}/>
-                
-            
-        
 
             {clicked ?
             <p className='post-explanation'>

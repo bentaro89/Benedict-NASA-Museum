@@ -5,32 +5,45 @@ import Planet1 from './Assets/planet1.png'
 import Planet2 from './Assets/planet2.png'
 import Planet3 from './Assets/planet3.png'
 import './App.css';
-import { useAsync } from 'react-async';
 import moment from 'moment';
 
-const loadPosts = async () => {
-  const API_KEY = 'j5Q7TVEuv5s1CHhD6WC0xO3dS45uTHgskG03Bdoe';
-  let d = new Date();
-  let date = `${d.getFullYear()}-${d.getMonth()}-${d.getDay()-2}`
+const API_KEY = 'j5Q7TVEuv5s1CHhD6WC0xO3dS45uTHgskG03Bdoe';
+
+// Given a date, return data from the NASA API
+const loadPost = async (date) => {
   return fetch(`https://api.nasa.gov/planetary/apod?api_key=${API_KEY}&date=${date}`)
-  .then(res => (res.ok ? res : Promise.reject(res)))
-  .then(res => res.json())
+    .then(res => (res.ok ? res : Promise.reject(res)))
+    .then(res => res.json());
 }
 
 function App() {
-  const [scrolled, setScroll] = useState(false);
+
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  // Called to check if window is scrolling
   window.onscroll = function () {
     scrollRotate();
-    setScroll(true);
   };
 
-  useEffect(() => {
-    const dates = Array(10)
-      .fill(0)
-      .map((_, i) => moment().subtract(i, 'days').format('YYYY-MM-DD'))
-      // .map();
-  }, [])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(async () => {
+    try {
+      const postsToLoad = Array(10).fill(0) // Fills the array with the past ten dates
+        .map((_, i) => moment().subtract(i, 'days').format('YYYY-MM-DD'));
 
+      // Retrieves all the data from the API in the past ten days
+      const data = await Promise.all(postsToLoad.map((postDate) => loadPost(postDate)));
+      setData(data);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // rotates the planets as it scrolls
   function scrollRotate() {
       let image1 = document.getElementById("planet1");
       let image2 = document.getElementById("planet2");
@@ -40,9 +53,8 @@ function App() {
       image3.style.transform = "rotate(" + window.pageYOffset/4 + "deg)";
   }
 
-  const { data, error, isLoading } = useAsync({ promiseFn: loadPosts })
-  if (isLoading) return "Loading..."
-  if (error) return `Something went wrong: ${error.message}`
+  if (isLoading) return (<div>"Loading..."</div>);
+  if (error) return (<div>`Something went wrong: ${error.message}`</div>);
 
   return (
     
@@ -53,19 +65,16 @@ function App() {
         <img className='planet2' src={Planet2} id='planet2' alt='planet2'/>
         <img className='planet3' src={Planet3} id='planet3' alt='planet3'/>
 
-          {console.log(data)}
-          <Post
-          title = {data.title}
-          date = {data.date}
-          img = {data.hdurl}
-          explanation = {data.explanation}
-          />
-          <Post
-          title = {data.title}
-          date = {data.date}
-          img = {data.hdurl}
-          explanation = {data.explanation}
-          />        
+          {data.map(({title, date, hdurl, explanation}) => (
+            // map the api data to individual post
+            <Post
+              key = {title}
+              title = {title}
+              date = {date}
+              img = {hdurl}
+              explanation = {explanation}
+            />
+          ))}
       </header>
     </div>
   );

@@ -41,19 +41,19 @@
 .planet1 {
   position: fixed;
   width: 10em;
-  right: 40em;
+  right: 75%;
   top: 40%;
-  z-index: 2;
+  z-index: 1;
 }
 .planet2 {
   position: fixed;
   width: 15em;
-  left: 40em;
-  top: 30%;
+  left: 75%;
+  top: 20%;
 }
 .planet3 {
   position: fixed;
   width: 6em;
-  left: 42em;
-  top: 70%;
+  left: 75%;
+  top: 60%;
 }
