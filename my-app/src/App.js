@@ -67,6 +67,8 @@ function App() {
 
           {data.map(({title, date, hdurl, explanation}) => (
             // map the api data to individual post
+            // Ensure it is a valid picture
+            hdurl?
             <Post
               key = {title}
               title = {title}
@@ -74,6 +76,10 @@ function App() {
               img = {hdurl}
               explanation = {explanation}
             />
+            :
+            <p key = {title}></p>
+            
+
           ))}
       </header>
     </div>
